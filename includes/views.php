@@ -147,6 +147,7 @@ function tsvp_view_login()
         </form>
         <p class="tsvp-small"><a href="<?php echo tsvp_link(['ansicht' => 'vergessen']); ?>">Passwort vergessen?</a></p>
         <p class="tsvp-small tsvp-muted">Noch keinen Zugang? Den bekommst du von deiner Abteilungsleitung oder vom Vorstand.</p>
+        <p class="tsvp-small tsvp-wplogin"><a href="<?php echo esc_url(wp_login_url(tsvp_page_url())); ?>">Als Admin mit WordPress anmelden</a></p>
     <?php }
     echo '</div></div>';
 }
@@ -190,7 +191,9 @@ function tsvp_view_app($u)
                 <span class="tsvp-avatar"><?php echo esc_html(mb_strtoupper(mb_substr($u->name, 0, 1))); ?></span>
                 <span><?php echo esc_html($u->name); ?><small><?php echo esc_html($rolle); ?></small></span>
             </a>
-            <?php if (!tsvp_via_wordpress()) : ?>
+            <?php if (tsvp_via_wordpress()) : ?>
+                <a class="tsvp-btn tsvp-btn--ghost tsvp-btn--sm" href="<?php echo esc_url(wp_logout_url(tsvp_page_url(['tsvp_msg' => 'abgemeldet']))); ?>" title="Meldet dich auch bei WordPress ab">Abmelden</a>
+            <?php else : ?>
                 <a class="tsvp-btn tsvp-btn--ghost tsvp-btn--sm" href="<?php echo tsvp_link(['tsvp_logout' => 1, 'n' => tsvp_nonce('logout')]); ?>">Abmelden</a>
             <?php endif; ?>
         </div>
