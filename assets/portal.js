@@ -113,4 +113,12 @@
         updateSumme(f);
     });
     root.querySelectorAll('[data-sichtbarkeit]').forEach(toggleAbteilung);
+
+    // Höhe der Kopfzeile merken, damit die Navigation darunter kleben bleibt
+    var head = root.querySelector('.tsvp-header');
+    function setHeaderHoehe() {
+        if (head) root.style.setProperty('--tsvp-header-h', head.offsetHeight + 'px');
+    }
+    setHeaderHoehe();
+    window.addEventListener('resize', setHeaderHoehe);
 })();

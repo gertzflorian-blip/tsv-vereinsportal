@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       TSV Vereinsportal
  * Description:       Interner Bereich für Vorstand, Abteilungsleitungen und Übungsleiter: Abrechnungen, Auszahlungsanträge und Dokumente – mit eigenen Zugängen.
- * Version:           0.2.1
+ * Version:           0.3.0
  * Author:            Florian
  * Requires at least: 6.0
  * Requires PHP:      7.4
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TSVP_VERSION', '0.2.1');
+define('TSVP_VERSION', '0.3.0');
 define('TSVP_FILE', __FILE__);
 define('TSVP_DIR', plugin_dir_path(__FILE__));
 define('TSVP_URL', plugin_dir_url(__FILE__));
@@ -23,6 +23,7 @@ require_once TSVP_DIR . 'includes/install.php';
 require_once TSVP_DIR . 'includes/auth.php';
 require_once TSVP_DIR . 'includes/actions.php';
 require_once TSVP_DIR . 'includes/views.php';
+require_once TSVP_DIR . 'includes/app.php';
 require_once TSVP_DIR . 'includes/updater.php';
 
 register_activation_hook(__FILE__, 'tsvp_install');

@@ -197,7 +197,7 @@ function tsvp_view_app($u)
     </header>
     <nav class="tsvp-nav" aria-label="Bereiche">
         <?php foreach ($menu as $key => $label) : ?>
-            <a href="<?php echo tsvp_link(['bereich' => $key]); ?>" class="<?php echo $key === $bereich ? 'is-active' : ''; ?>"><?php echo esc_html($label); ?></a>
+            <a href="<?php echo tsvp_link(['bereich' => $key]); ?>" class="<?php echo $key === $bereich ? 'is-active' : ''; ?>"<?php echo $key === $bereich ? ' aria-current="page"' : ''; ?>><?php echo tsvp_nav_icon($key); ?><span><?php echo esc_html($label); ?></span></a>
         <?php endforeach; ?>
     </nav>
     <main class="tsvp-main">
@@ -224,8 +224,24 @@ function tsvp_view_app($u)
         }
         ?>
     </main>
-    <footer class="tsvp-footer">Vereinsportal · Version <?php echo esc_html(TSVP_VERSION); ?></footer>
+    <footer class="tsvp-footer">Vereinsportal · Version <?php echo esc_html(TSVP_VERSION); ?> · <a href="<?php echo esc_url(home_url('/')); ?>">Zur Homepage</a></footer>
     <?php
+}
+
+/** Kleine Symbole für die App-Navigation (auf dem Handy unten). */
+function tsvp_nav_icon($key)
+{
+    $paths = [
+        'start'        => '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+        'abrechnungen' => '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+        'auszahlungen' => '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/>',
+        'dokumente'    => '<path d="M4 6a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>',
+        'verwaltung'   => '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.3-5.5 6.5-5.5s5.9 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.6 3.5 5.2"/>',
+    ];
+    if (!isset($paths[$key])) {
+        return '';
+    }
+    return '<svg class="tsvp-nav__icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $paths[$key] . '</svg>';
 }
 
 /* ------------------------------------------------------------------ */
@@ -410,14 +426,14 @@ function tsvp_view_abrechnungen($u)
     $mit_person = tsvp_darf_verwalten($u);
     ?>
     <div class="tsvp-tablewrap"><table class="tsvp-table">
-        <thead><tr><th>Monat</th><?php if ($mit_person) : ?><th>Person</th><?php endif; ?><th>Abteilung</th><th class="num">Stunden</th><th class="num">Betrag</th><th>Status</th></tr></thead>
+        <thead><tr><th>Monat</th><?php if ($mit_person) : ?><th>Person</th><?php endif; ?><th class="tsvp-hide-sm">Abteilung</th><th class="num tsvp-hide-sm">Stunden</th><th class="num">Betrag</th><th>Status</th></tr></thead>
         <tbody>
         <?php foreach ($rows as $r) : $link = tsvp_link(['bereich' => 'abrechnungen', 'id' => $r->id]); ?>
             <tr data-href="<?php echo $link; ?>">
                 <td><a href="<?php echo $link; ?>"><?php echo esc_html(tsvp_monat($r->monat)); ?></a></td>
                 <?php if ($mit_person) : ?><td><?php echo esc_html($r->person); ?></td><?php endif; ?>
-                <td><?php echo esc_html(tsvp_abteilung_name($r->abteilung_id)); ?></td>
-                <td class="num"><?php echo esc_html(tsvp_num($r->stunden)); ?></td>
+                <td class="tsvp-hide-sm"><?php echo esc_html(tsvp_abteilung_name($r->abteilung_id)); ?></td>
+                <td class="num tsvp-hide-sm"><?php echo esc_html(tsvp_num($r->stunden)); ?></td>
                 <td class="num"><?php echo esc_html(tsvp_money($r->betrag)); ?></td>
                 <td><?php echo tsvp_badge($r->status, $labels); ?></td>
             </tr>
@@ -623,14 +639,14 @@ function tsvp_view_auszahlungen($u)
     }
     ?>
     <div class="tsvp-tablewrap"><table class="tsvp-table">
-        <thead><tr><th>Datum</th><th>Zweck</th><th>Abteilung</th><th>Von</th><th class="num">Betrag</th><th>Status</th></tr></thead>
+        <thead><tr><th class="tsvp-hide-sm">Datum</th><th>Zweck</th><th class="tsvp-hide-sm">Abteilung</th><th class="tsvp-hide-sm">Von</th><th class="num">Betrag</th><th>Status</th></tr></thead>
         <tbody>
         <?php foreach ($rows as $r) : $link = tsvp_link(['bereich' => 'auszahlungen', 'id' => $r->id]); ?>
             <tr data-href="<?php echo $link; ?>">
-                <td><?php echo esc_html(tsvp_datum_utc($r->created_at)); ?></td>
+                <td class="tsvp-hide-sm"><?php echo esc_html(tsvp_datum_utc($r->created_at)); ?></td>
                 <td><a href="<?php echo $link; ?>"><?php echo esc_html($r->zweck); ?></a></td>
-                <td><?php echo esc_html(tsvp_abteilung_name($r->abteilung_id)); ?></td>
-                <td><?php echo esc_html($r->person); ?></td>
+                <td class="tsvp-hide-sm"><?php echo esc_html(tsvp_abteilung_name($r->abteilung_id)); ?></td>
+                <td class="tsvp-hide-sm"><?php echo esc_html($r->person); ?></td>
                 <td class="num"><?php echo esc_html(tsvp_money($r->betrag)); ?></td>
                 <td><?php echo tsvp_badge($r->status, $labels); ?></td>
             </tr>
@@ -878,7 +894,7 @@ function tsvp_view_personen($u)
     $rollen = tsvp_rollen();
     ?>
     <div class="tsvp-tablewrap"><table class="tsvp-table">
-        <thead><tr><th>Name</th><th>Rolle</th><th>Abteilung</th><th class="num">Stundensatz</th><th>Zugang</th><th></th></tr></thead>
+        <thead><tr><th>Name</th><th>Rolle</th><th class="tsvp-hide-sm">Abteilung</th><th class="num tsvp-hide-sm">Stundensatz</th><th>Zugang</th><th></th></tr></thead>
         <tbody>
         <?php foreach ($rows as $r) :
             if (!(int) $r->aktiv) {
@@ -892,8 +908,8 @@ function tsvp_view_personen($u)
             <tr>
                 <td><strong><?php echo esc_html($r->name); ?></strong><br><small class="tsvp-muted"><?php echo esc_html($r->email); ?></small></td>
                 <td><?php echo esc_html($rollen[$r->rolle] ?? $r->rolle); ?></td>
-                <td><?php echo $r->abteilung_id ? esc_html(tsvp_abteilung_name($r->abteilung_id)) : '–'; ?></td>
-                <td class="num"><?php echo (float) $r->stundensatz > 0 ? esc_html(tsvp_money($r->stundensatz)) : '–'; ?></td>
+                <td class="tsvp-hide-sm"><?php echo $r->abteilung_id ? esc_html(tsvp_abteilung_name($r->abteilung_id)) : '–'; ?></td>
+                <td class="num tsvp-hide-sm"><?php echo (float) $r->stundensatz > 0 ? esc_html(tsvp_money($r->stundensatz)) : '–'; ?></td>
                 <td><span class="tsvp-badge tsvp-badge--<?php echo esc_attr($zugang[0]); ?>"><?php echo esc_html($zugang[1]); ?></span></td>
                 <td class="tsvp-rowactions">
                     <?php if ($edit && (tsvp_kann_person_bearbeiten($u, $r))) : ?>

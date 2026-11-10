@@ -8,6 +8,12 @@ Interner Bereich für Vorstand, Abteilungsleitungen und Übungsleiter – als Wo
    Gibt es unter `/vereinsportal` schon eine andere Seite, bekommt die neue Seite eine eigene Adresse (z. B. `/vereinsportal-2`) – dann einfach umbenennen.
 3. Als WordPress-Admin die Portal-Seite öffnen: Du bist automatisch als **Vorstand** drin.
 
+## Als App nutzen
+Die Portal-Seite erscheint ohne Kopfzeile, Menü und Fußzeile der Homepage – bildschirmfüllend wie eine eigene App.
+Auf dem Handy lässt sie sich auf den Startbildschirm legen:
+- **iPhone (Safari):** Teilen-Symbol → „Zum Home-Bildschirm“
+- **Android (Chrome):** Menü ⋮ → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“
+
 ## Erste Schritte
 1. **Verwaltung → Abteilungen**: Abteilungen anlegen.
 2. **Verwaltung → Personen**: Vorstand, Abteilungsleitungen und Übungsleiter anlegen (mit Stundensatz).
