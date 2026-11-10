@@ -224,6 +224,7 @@ function tsvp_view_app($u)
         }
         ?>
     </main>
+    <footer class="tsvp-footer">Vereinsportal · Version <?php echo esc_html(TSVP_VERSION); ?></footer>
     <?php
 }
 

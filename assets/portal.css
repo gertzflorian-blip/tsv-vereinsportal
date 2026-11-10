@@ -189,6 +189,7 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 .tsvp-auth__card { width: 100%; max-width: 420px; padding: 1.75rem; }
 .tsvp-auth__brand { margin-bottom: 1.5rem; }
 .tsvp-auth h2 { margin-bottom: .5rem; }
+.tsvp-footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--tsvp-line); color: var(--tsvp-muted); font-size: .8rem; text-align: center; }
 
 /* Mobil -------------------------------------------------------------- */
 @media (max-width: 640px) {
