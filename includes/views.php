@@ -1051,6 +1051,46 @@ function tsvp_view_abteilungen()
 /* Abteilungen (Übersicht für den Vorstand)                            */
 /* ------------------------------------------------------------------ */
 
+/** Passendes Sport-Symbol anhand des Abteilungsnamens. */
+function tsvp_abteilung_icon($name)
+{
+    $n = mb_strtolower((string) $name);
+    $icons = [
+        'tischtennis'  => '<circle cx="9.5" cy="10.5" r="6.5" fill="currentColor" fill-opacity=".25"/><path d="m14.2 15.2 4.3 4.3" stroke-width="3.4"/><circle cx="19" cy="4.5" r="1.8" fill="currentColor"/>',
+        'badminton'    => '<path d="M8.5 17h7a3.5 3.5 0 0 1-7 0z"/><path d="M8.5 17 6 3.5M15.5 17 18 3.5M11 17l-.8-13.5M13 17l.8-13.5M6 3.5h12M7.2 10h9.6"/>',
+        'bogen'        => '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/><path d="M12 12 21 3M18 3h3v3"/>',
+        'volley'       => '<circle cx="12" cy="12" r="9"/><path d="M12 3c-1.5 4-1 8 1.5 11M21 12c-4-1.5-8-.5-10.5 2.5M5 18.5c2.5-3.5 6.5-5 10-4.5M3.5 9.5c3 .5 6 2.5 7.5 5"/>',
+        'basketball'   => '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3 3 3 9.8 0 12.8M18.4 5.6c-3 3-3 9.8 0 12.8"/>',
+        'handball'     => '<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3.5 9h17M3.5 15h17"/>',
+        'tennis'       => '<circle cx="12" cy="12" r="9"/><path d="M5.5 5.8c3.5 3.2 3.5 9.2 0 12.4M18.5 5.8c-3.5 3.2-3.5 9.2 0 12.4"/>',
+        'fußball'      => '<circle cx="12" cy="12" r="9"/><path d="m12 8 3.3 2.4-1.3 3.9h-4l-1.3-3.9z"/><path d="M12 8V4.2M15.3 10.4l3.6-1.2M14 14.3l2.2 3.1M10 14.3l-2.2 3.1M8.7 10.4 5.1 9.2"/>',
+        'fussball'     => '<circle cx="12" cy="12" r="9"/><path d="m12 8 3.3 2.4-1.3 3.9h-4l-1.3-3.9z"/><path d="M12 8V4.2M15.3 10.4l3.6-1.2M14 14.3l2.2 3.1M10 14.3l-2.2 3.1M8.7 10.4 5.1 9.2"/>',
+        'leichtathlet' => '<circle cx="14.5" cy="4.5" r="2"/><path d="m8 21 3-6 3 2.5V21M6 12l3.5-4 4 1 2.5 3.5 3 .5M9.5 8 12 14.5"/>',
+        'lauf'         => '<circle cx="14.5" cy="4.5" r="2"/><path d="m8 21 3-6 3 2.5V21M6 12l3.5-4 4 1 2.5 3.5 3 .5M9.5 8 12 14.5"/>',
+        'reha'         => '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/><path d="M5 12h3.5l1.5-2.5 2.5 5 1.5-2.5H19"/>',
+        'gesundheit'   => '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/><path d="M5 12h3.5l1.5-2.5 2.5 5 1.5-2.5H19"/>',
+        'schwimm'      => '<circle cx="16" cy="6.5" r="2"/><path d="M4 11.5l4.5-3 3.5 2.5 3 2M2 17c1.7 0 1.7-1.2 3.3-1.2s1.7 1.2 3.4 1.2 1.6-1.2 3.3-1.2 1.7 1.2 3.3 1.2 1.7-1.2 3.4-1.2S20.4 17 22 17M2 21c1.7 0 1.7-1.2 3.3-1.2s1.7 1.2 3.4 1.2 1.6-1.2 3.3-1.2 1.7 1.2 3.3 1.2 1.7-1.2 3.4-1.2S20.4 21 22 21"/>',
+        'turn'         => '<path d="M7 2v8M17 2v8"/><circle cx="7" cy="13.5" r="3.5"/><circle cx="17" cy="13.5" r="3.5"/><path d="M3 22h18"/>',
+        'gymnast'      => '<path d="M7 2v8M17 2v8"/><circle cx="7" cy="13.5" r="3.5"/><circle cx="17" cy="13.5" r="3.5"/><path d="M3 22h18"/>',
+        'fitness'      => '<path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/>',
+        'yoga'         => '<circle cx="12" cy="5" r="2"/><path d="M12 8v6M5 11l7 2 7-2M6 20l6-6 6 6M4 20h16"/>',
+        'tanz'         => '<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
+        'rad'          => '<circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="m5.5 16.5 4-7h6l3 7M9.5 9.5 12 16.5h-6.5M14 6h2.5l-1 3.5"/>',
+        'wander'       => '<path d="m2 20 7-12 4 6 3-4 6 10z"/><path d="m7.5 10.5 1.5 1 1.5-1"/>',
+        'judo'         => '<path d="M4 9h16M8 9l-3 12M16 9l3 12M9.5 9v4.5l2.5 2 2.5-2V9"/><path d="M8 4c1 1.5 2.5 2 4 2s3-.5 4-2"/>',
+        'karate'       => '<path d="M4 9h16M8 9l-3 12M16 9l3 12M9.5 9v4.5l2.5 2 2.5-2V9"/><path d="M8 4c1 1.5 2.5 2 4 2s3-.5 4-2"/>',
+        'kinder'       => '<path d="m12 3 2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.4l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/>',
+    ];
+    $pfad = '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.5 4M17 6h2.5a2.5 2.5 0 0 1-2.5 4"/>';
+    foreach ($icons as $wort => $svg) {
+        if (strpos($n, $wort) !== false) {
+            $pfad = $svg;
+            break;
+        }
+    }
+    return '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $pfad . '</svg>';
+}
+
 function tsvp_view_abteilungen_uebersicht($u)
 {
     global $wpdb;
@@ -1063,9 +1103,14 @@ function tsvp_view_abteilungen_uebersicht($u)
         'SELECT * FROM ' . tsvp_t('benutzer') . " WHERE rolle IN ('abteilungsleiter','uebungsleiter') ORDER BY aktiv DESC, name"
     );
     $nach = [];
+    $n_al = 0;
+    $n_uel = 0;
     foreach ($personen as $p) {
         $a = isset($abteilungen[(int) $p->abteilung_id]) ? (int) $p->abteilung_id : 0;
         $nach[$a][$p->rolle][] = $p;
+        if ((int) $p->aktiv) {
+            $p->rolle === 'abteilungsleiter' ? $n_al++ : $n_uel++;
+        }
     }
     $verwalten = tsvp_link(['bereich' => 'verwaltung', 'tab' => 'abteilungen']);
     ?>
@@ -1079,6 +1124,19 @@ function tsvp_view_abteilungen_uebersicht($u)
         echo '<p class="tsvp-center"><a class="tsvp-btn tsvp-btn--primary" href="' . $verwalten . '">+ Abteilung anlegen</a></p>';
         return;
     }
+    $ohne_leitung = count(array_filter(array_keys($abteilungen), function ($id) use ($nach) {
+        return empty($nach[$id]['abteilungsleiter']);
+    }));
+    ?>
+    <div class="tsvp-abtstats">
+        <div><strong><?php echo count($abteilungen); ?></strong><span>Abteilungen</span></div>
+        <div><strong><?php echo $n_al; ?></strong><span>Abteilungsleitungen</span></div>
+        <div><strong><?php echo $n_uel; ?></strong><span>Übungsleiter</span></div>
+        <?php if ($ohne_leitung) : ?>
+            <div class="is-warn"><strong><?php echo $ohne_leitung; ?></strong><span>ohne Leitung</span></div>
+        <?php endif; ?>
+    </div>
+    <?php
     echo '<div class="tsvp-abtgrid">';
     foreach ($abteilungen as $id => $name) {
         tsvp_abteilung_karte($id, $name, $nach[$id] ?? []);
@@ -1091,45 +1149,45 @@ function tsvp_view_abteilungen_uebersicht($u)
 
 function tsvp_abteilung_karte($id, $name, $leute)
 {
-    $al  = $leute['abteilungsleiter'] ?? [];
-    $uel = $leute['uebungsleiter'] ?? [];
-    $neu = tsvp_link(['bereich' => 'verwaltung', 'person' => 'neu', 'abteilung' => $id, 'rolle' => 'uebungsleiter', 'von' => 'abteilungen']);
+    $al   = $leute['abteilungsleiter'] ?? [];
+    $uel  = $leute['uebungsleiter'] ?? [];
+    $link = function ($rolle) use ($id) {
+        return tsvp_link(['bereich' => 'verwaltung', 'person' => 'neu', 'abteilung' => $id, 'rolle' => $rolle, 'von' => 'abteilungen']);
+    };
+    $anzahl = count($uel) === 1 ? '1 Übungsleiter' : count($uel) . ' Übungsleiter';
     ?>
-    <section class="tsvp-card tsvp-abt<?php echo $id ? '' : ' tsvp-abt--ohne'; ?>">
+    <section class="tsvp-abt<?php echo $id ? '' : ' tsvp-abt--ohne'; ?>">
         <header class="tsvp-abt__head">
-            <h3><?php echo esc_html($name); ?></h3>
-            <span class="tsvp-muted"><?php echo count($uel) === 1 ? '1 Übungsleiter' : count($uel) . ' Übungsleiter'; ?></span>
+            <span class="tsvp-abt__icon"><?php echo tsvp_abteilung_icon($id ? $name : ''); ?></span>
+            <span class="tsvp-abt__titel"><h3><?php echo esc_html($name); ?></h3><small><?php echo esc_html($anzahl); ?></small></span>
         </header>
-        <?php if ($id) : ?>
-            <div class="tsvp-abt__leitung">
-                <span>Abteilungsleitung</span>
-                <?php if ($al) :
-                    foreach ($al as $p) {
-                        tsvp_abteilung_person($p);
-                    }
-                else : ?>
-                    <a class="tsvp-abt__fehlt" href="<?php echo tsvp_link(['bereich' => 'verwaltung', 'person' => 'neu', 'abteilung' => $id, 'rolle' => 'abteilungsleiter', 'von' => 'abteilungen']); ?>">+ Abteilungsleitung festlegen</a>
-                <?php endif; ?>
-            </div>
-        <?php elseif ($al) : ?>
-            <div class="tsvp-abt__leitung"><span>Abteilungsleitung</span><?php foreach ($al as $p) {
-                tsvp_abteilung_person($p);
-            } ?></div>
-        <?php endif; ?>
-        <div class="tsvp-abt__uel">
-            <span>Übungsleiter</span>
-            <?php if ($uel) : ?>
-                <ul><?php foreach ($uel as $p) {
-                    echo '<li>';
-                    tsvp_abteilung_person($p, true);
-                    echo '</li>';
-                } ?></ul>
+
+        <div class="tsvp-abt__block">
+            <span class="tsvp-abt__label">Leitung</span>
+            <?php if ($al) :
+                foreach ($al as $p) {
+                    tsvp_abteilung_person($p);
+                }
+            elseif ($id) : ?>
+                <a class="tsvp-abt__fehlt" href="<?php echo $link('abteilungsleiter'); ?>"><span>+</span> Leitung festlegen</a>
             <?php else : ?>
-                <p class="tsvp-muted tsvp-abt__leer">Noch keine Übungsleiter.</p>
+                <p class="tsvp-abt__leer">–</p>
             <?php endif; ?>
         </div>
+
+        <div class="tsvp-abt__block">
+            <span class="tsvp-abt__label">Übungsleiter</span>
+            <?php if ($uel) :
+                foreach ($uel as $p) {
+                    tsvp_abteilung_person($p, true);
+                }
+            else : ?>
+                <p class="tsvp-abt__leer">Noch keine Übungsleiter</p>
+            <?php endif; ?>
+        </div>
+
         <?php if ($id) : ?>
-            <a class="tsvp-btn tsvp-btn--sm tsvp-abt__add" href="<?php echo $neu; ?>">+ Übungsleiter anlegen</a>
+            <a class="tsvp-abt__add" href="<?php echo $link('uebungsleiter'); ?>"><span>+</span> Übungsleiter anlegen</a>
         <?php endif; ?>
     </section>
     <?php
@@ -1138,14 +1196,10 @@ function tsvp_abteilung_karte($id, $name, $leute)
 function tsvp_abteilung_person($p, $mit_satz = false)
 {
     $url = tsvp_link(['bereich' => 'verwaltung', 'person' => $p->id, 'von' => 'abteilungen']);
-    $info = [];
-    if ($mit_satz && (float) $p->stundensatz > 0) {
-        $info[] = tsvp_money($p->stundensatz) . '/Std.';
-    }
     ?>
     <a class="tsvp-abt__person<?php echo (int) $p->aktiv ? '' : ' is-inaktiv'; ?>" href="<?php echo $url; ?>">
         <span class="tsvp-avatar"><?php echo esc_html(mb_strtoupper(mb_substr($p->name, 0, 1))); ?></span>
-        <span class="tsvp-abt__name"><strong><?php echo esc_html($p->name); ?></strong><?php if ($info) : ?><small><?php echo esc_html(implode(' · ', $info)); ?></small><?php endif; ?></span>
+        <span class="tsvp-abt__name"><strong><?php echo esc_html($p->name); ?></strong><?php if ($mit_satz && (float) $p->stundensatz > 0) : ?><small><?php echo esc_html(tsvp_money($p->stundensatz)); ?> pro Stunde</small><?php endif; ?></span>
         <?php if (!(int) $p->aktiv) : ?>
             <span class="tsvp-badge tsvp-badge--inaktiv">Deaktiviert</span>
         <?php elseif ($p->pass_hash === '' && !$p->wp_user_id) : ?>
