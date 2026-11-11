@@ -1,13 +1,17 @@
 /* TSV Vereinsportal – alles unter .tsvp gekapselt, damit das Theme nicht stört.
    Farben anpassen: einfach die Variablen hier oben ändern. */
 .tsvp {
-    --tsvp-accent: #0b6b3a;
+    --tsvp-accent: #2b5ba5;      /* Vereins-Dunkelblau */
+    --tsvp-accent-2: #1c9cd9;    /* Vereins-Hellblau */
+    --tsvp-gelb: #f9eb1d;        /* Vereins-Gelb */
     --tsvp-accent-ink: #ffffff;
-    --tsvp-accent-soft: #e7f3ec;
-    --tsvp-ink: #17211b;
-    --tsvp-muted: #5f6b64;
-    --tsvp-line: #dde3df;
-    --tsvp-bg: #f5f7f5;
+    --tsvp-accent-soft: #e6eef9;
+    --tsvp-ok: #1a7f4b;
+    --tsvp-ok-soft: #e6f4ec;
+    --tsvp-ink: #16202c;
+    --tsvp-muted: #5b6878;
+    --tsvp-line: #dbe3ec;
+    --tsvp-bg: #f3f7fb;
     --tsvp-card: #ffffff;
     --tsvp-danger: #b42318;
     --tsvp-danger-soft: #fdecea;
@@ -37,7 +41,8 @@
 .tsvp-brand, .tsvp-auth__brand { display: flex; align-items: center; gap: .7rem; color: var(--tsvp-ink) !important; text-decoration: none !important; }
 .tsvp-brand span span, .tsvp-auth__brand span { display: block; color: var(--tsvp-muted); font-size: .82rem; }
 .tsvp-brand strong, .tsvp-auth__brand strong { display: block; font-size: 1.05rem; }
-.tsvp-logo { display: inline-grid !important; place-items: center; width: 42px; height: 42px; border-radius: 10px; background: var(--tsvp-accent); color: var(--tsvp-accent-ink) !important; font-weight: 800; font-size: .85rem !important; letter-spacing: .04em; flex: none; }
+.tsvp-logo { display: block; width: auto !important; height: 46px !important; max-width: none !important; flex: none; border: 0 !important; box-shadow: none !important; }
+.tsvp-auth__brand .tsvp-logo { height: 64px !important; }
 .tsvp-user { display: flex; align-items: center; gap: .6rem; }
 .tsvp-user__name { display: flex; align-items: center; gap: .55rem; color: var(--tsvp-ink) !important; padding: .3rem .6rem .3rem .3rem; border-radius: 999px; text-decoration: none !important; }
 .tsvp-user__name:hover, .tsvp-user__name.is-active { background: var(--tsvp-accent-soft); }
@@ -70,7 +75,7 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 
 /* Hinweise ----------------------------------------------------------- */
 .tsvp-notice { padding: .8rem 1rem; border-radius: 10px; margin-bottom: 1rem; border: 1px solid transparent; }
-.tsvp-notice--ok { background: var(--tsvp-accent-soft); border-color: #b9dcc7; }
+.tsvp-notice--ok { background: var(--tsvp-ok-soft); border-color: #b9dcc7; }
 .tsvp-notice--err { background: var(--tsvp-danger-soft); border-color: #f5c2bd; color: #7a1a12; }
 .tsvp-notice--warn { background: var(--tsvp-warn-soft); border-color: #f1d798; }
 .tsvp-empty { text-align: center; padding: 2rem 1rem; border: 1px dashed var(--tsvp-line); border-radius: var(--tsvp-radius); color: var(--tsvp-muted); }
@@ -104,7 +109,7 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 .tsvp-form label small { font-weight: 400; color: var(--tsvp-muted); margin-left: .25rem; }
 .tsvp input[type=text], .tsvp input[type=email], .tsvp input[type=password], .tsvp input[type=number],
 .tsvp input[type=date], .tsvp input[type=month], .tsvp input[type=search], .tsvp select, .tsvp textarea {
-    display: block; width: 100%; margin-top: .3rem; padding: .6rem .7rem; border: 1px solid #c9d1cc; border-radius: 8px;
+    display: block; width: 100%; margin-top: .3rem; padding: .6rem .7rem; border: 1px solid #c8d2dd; border-radius: 8px;
     background: #fff; color: var(--tsvp-ink); font: inherit; font-weight: 400; line-height: 1.3; box-shadow: none; min-height: 42px;
 }
 .tsvp input:focus, .tsvp select:focus, .tsvp textarea:focus { outline: 2px solid var(--tsvp-accent); outline-offset: 0; border-color: var(--tsvp-accent); }
@@ -140,19 +145,19 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 .tsvp-table th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--tsvp-muted); font-weight: 600; white-space: nowrap; }
 .tsvp-table tbody tr:last-child td { border-bottom: 0; }
 .tsvp-table tr[data-href] { cursor: pointer; }
-.tsvp-table tr[data-href]:hover td { background: #fafcfb; }
+.tsvp-table tr[data-href]:hover td { background: #f9fbfd; }
 .tsvp-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .tsvp-table tfoot td { font-weight: 600; border-top: 1px solid var(--tsvp-line); border-bottom: 0; }
 .tsvp-table__total td { font-size: 1.1rem; color: var(--tsvp-accent); }
 .tsvp-rowactions { display: flex; gap: .3rem; justify-content: flex-end; flex-wrap: wrap; align-items: center; }
 
 /* Status-Badges ------------------------------------------------------ */
-.tsvp-badge { display: inline-block; padding: .2rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 600; white-space: nowrap; background: #eef1ef; color: var(--tsvp-muted); }
+.tsvp-badge { display: inline-block; padding: .2rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 600; white-space: nowrap; background: #edf1f6; color: var(--tsvp-muted); }
 .tsvp-badge--eingereicht { background: #fff3d6; color: #8a5a00; }
 .tsvp-badge--freigegeben, .tsvp-badge--genehmigt { background: #e3eefc; color: #1d4f91; }
-.tsvp-badge--ausgezahlt { background: var(--tsvp-accent-soft); color: var(--tsvp-accent); }
+.tsvp-badge--ausgezahlt { background: var(--tsvp-ok-soft); color: var(--tsvp-ok); }
 .tsvp-badge--abgelehnt { background: var(--tsvp-danger-soft); color: var(--tsvp-danger); }
-.tsvp-badge--inaktiv { background: #eef1ef; color: #8a948f; }
+.tsvp-badge--inaktiv { background: #edf1f6; color: #8a95a3; }
 .tsvp-tag { flex: none; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: .2rem .5rem; border-radius: 6px; background: #fff3d6; color: #8a5a00; }
 .tsvp-tag--alt { background: #e3eefc; color: #1d4f91; }
 
@@ -161,7 +166,7 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 .tsvp-list > li { border-bottom: 1px solid var(--tsvp-line); margin: 0; }
 .tsvp-list > li:last-child { border-bottom: 0; }
 .tsvp-list > li > a, .tsvp-list__row { display: flex; align-items: center; gap: .9rem; padding: .85rem 1rem; color: var(--tsvp-ink) !important; text-decoration: none !important; }
-.tsvp-list > li > a:hover { background: #fafcfb; }
+.tsvp-list > li > a:hover { background: #f9fbfd; }
 .tsvp-list__main { flex: 1; min-width: 0; }
 .tsvp-list__main strong { display: block; }
 .tsvp-list__main small { display: block; color: var(--tsvp-muted); }
@@ -171,8 +176,8 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 .tsvp-doc__desc { display: block; font-size: .9rem; color: var(--tsvp-ink); opacity: .85; }
 .tsvp-doc__del { padding-right: .6rem; margin: 0; }
 .tsvp-doc .tsvp-badge { margin-bottom: .2rem; font-size: .75rem; padding: .15rem .55rem; }
-.tsvp-badge--jahreshauptversammlung, .tsvp-doc--jahreshauptversammlung .tsvp-filetype { background: var(--tsvp-accent-soft); color: var(--tsvp-accent); }
-.tsvp-badge--vereinsratssitzung, .tsvp-doc--vereinsratssitzung .tsvp-filetype { background: #e3eefc; color: #1d4f91; }
+.tsvp-badge--jahreshauptversammlung, .tsvp-doc--jahreshauptversammlung .tsvp-filetype { background: #fdf6b8; color: #6b5d00; }
+.tsvp-badge--vereinsratssitzung, .tsvp-doc--vereinsratssitzung .tsvp-filetype { background: #dcf0fb; color: #0f6496; }
 .tsvp-cal { width: 56px !important; height: 60px !important; display: flex !important; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; letter-spacing: 0 !important; text-transform: uppercase; }
 .tsvp-cal b { font-size: 1.35rem; font-weight: 800; }
 .tsvp-cal span { font-size: .68rem; font-weight: 700; }
@@ -203,12 +208,20 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 .tsvp-footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--tsvp-line); color: var(--tsvp-muted); font-size: .8rem; text-align: center; }
 
 /* Eigenständige App-Ansicht (ohne Homepage-Theme) -------------------- */
-html:has(.tsvp-body) { background: var(--tsvp-bg, #f5f7f5); }
-.tsvp-body { margin: 0; min-height: 100vh; min-height: 100dvh; background: #f5f7f5; -webkit-text-size-adjust: 100%; }
+html:has(.tsvp-body) { background: var(--tsvp-bg, #f3f7fb); }
+.tsvp-body { margin: 0; min-height: 100vh; min-height: 100dvh; background: #f3f7fb; -webkit-text-size-adjust: 100%; }
 .tsvp-body .tsvp { padding: 0 max(16px, env(safe-area-inset-right)) 2rem max(16px, env(safe-area-inset-left)); }
 .tsvp-body .tsvp-header { position: sticky; top: 0; z-index: 30; margin: 0 -16px; padding: calc(.75rem + env(safe-area-inset-top)) 16px .75rem;
-    background: rgba(245, 247, 245, .92); -webkit-backdrop-filter: saturate(1.4) blur(12px); backdrop-filter: saturate(1.4) blur(12px); }
-.tsvp-body .tsvp-nav { position: sticky; top: var(--tsvp-header-h, 70px); z-index: 25; background: #f5f7f5; }
+    background: var(--tsvp-accent); box-shadow: inset 0 -4px 0 var(--tsvp-gelb); }
+/* Kopfzeile in Vereinsfarben: Dunkelblau mit gelbem Streifen */
+.tsvp-body .tsvp-header .tsvp-brand, .tsvp-body .tsvp-header .tsvp-user__name { color: #fff !important; }
+.tsvp-body .tsvp-header .tsvp-brand span span, .tsvp-body .tsvp-header .tsvp-user__name small { color: rgba(255, 255, 255, .78); }
+.tsvp-body .tsvp-header .tsvp-user__name:hover, .tsvp-body .tsvp-header .tsvp-user__name.is-active { background: rgba(255, 255, 255, .14); }
+.tsvp-body .tsvp-header .tsvp-avatar { background: var(--tsvp-gelb); color: var(--tsvp-accent); }
+.tsvp-body .tsvp-header .tsvp-btn { background: transparent; color: #fff !important; border-color: rgba(255, 255, 255, .55); }
+.tsvp-body .tsvp-header .tsvp-btn:hover { background: rgba(255, 255, 255, .14); border-color: #fff; }
+.tsvp-body .tsvp-header .tsvp-logo { filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .25)); }
+.tsvp-body .tsvp-nav { position: sticky; top: var(--tsvp-header-h, 70px); z-index: 25; background: #f3f7fb; }
 .tsvp-body .tsvp-auth { min-height: 100vh; min-height: 100dvh; padding: calc(2rem + env(safe-area-inset-top)) 0 2rem; }
 .tsvp-footer a { color: inherit !important; text-decoration: underline !important; }
 
@@ -223,7 +236,7 @@ html:has(.tsvp-body) { background: var(--tsvp-bg, #f5f7f5); }
     .tsvp-body .tsvp-nav a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
     .tsvp-body .tsvp-nav a.is-active { color: var(--tsvp-accent); }
     .tsvp-body .tsvp-nav__icon { display: block; }
-    .tsvp-body .tsvp-header { padding-bottom: .6rem; }
+    .tsvp-body .tsvp-header { padding-bottom: calc(.6rem + 4px); }
     .tsvp-body .tsvp-brand span span { display: none; }
     .tsvp-body .tsvp-user__name > span:last-child { display: none; }
     .tsvp-body .tsvp-main { padding-top: .5rem; }

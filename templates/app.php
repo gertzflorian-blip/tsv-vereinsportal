@@ -14,7 +14,7 @@ $tsvp_sw    = add_query_arg('tsvp_sw', 1, tsvp_page_url());
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Vereinsportal · <?php echo esc_html(get_bloginfo('name')); ?></title>
     <meta name="robots" content="noindex, nofollow">
-    <meta name="theme-color" content="#0b6b3a">
+    <meta name="theme-color" content="#2b5ba5">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Vereinsportal">

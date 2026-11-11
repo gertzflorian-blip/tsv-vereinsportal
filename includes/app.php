@@ -56,7 +56,7 @@ function tsvp_send_manifest()
         'scope'            => tsvp_app_scope(),
         'display'          => 'standalone',
         'background_color' => '#f5f7f5',
-        'theme_color'      => '#0b6b3a',
+        'theme_color'      => '#2b5ba5',
         'icons'            => [
             ['src' => $icons . 'icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
             ['src' => $icons . 'icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],
@@ -129,13 +129,13 @@ function tsvp_send_offline()
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Offline · Vereinsportal</title>
-    <meta name="theme-color" content="#0b6b3a">
+    <meta name="theme-color" content="#2b5ba5">
     <link rel="stylesheet" href="<?php echo esc_url(TSVP_URL . 'assets/portal.css?ver=' . TSVP_VERSION); ?>">
 </head>
 <body class="tsvp-body">
 <div class="tsvp">
     <div class="tsvp-auth"><div class="tsvp-card tsvp-auth__card">
-        <div class="tsvp-auth__brand"><span class="tsvp-logo">TSV</span><div><strong>Vereinsportal</strong><span><?php echo esc_html(get_bloginfo('name')); ?></span></div></div>
+        <div class="tsvp-auth__brand"><img class="tsvp-logo" src="<?php echo esc_url(TSVP_URL . 'assets/logo.png'); ?>" alt="TSV Much" width="47" height="64"><div><strong>Vereinsportal</strong><span><?php echo esc_html(get_bloginfo('name')); ?></span></div></div>
         <h2>Keine Verbindung</h2>
         <p class="tsvp-muted">Das Vereinsportal braucht eine Internetverbindung. Sobald du wieder online bist, geht's weiter.</p>
         <p><a class="tsvp-btn tsvp-btn--primary tsvp-btn--block" href="<?php echo esc_url(tsvp_page_url()); ?>">Erneut versuchen</a></p>

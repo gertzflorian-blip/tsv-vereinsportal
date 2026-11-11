@@ -109,7 +109,7 @@ function tsvp_view_login()
 {
     $ansicht = isset($_GET['ansicht']) ? sanitize_key($_GET['ansicht']) : '';
     echo '<div class="tsvp-auth"><div class="tsvp-card tsvp-auth__card">';
-    echo '<div class="tsvp-auth__brand"><span class="tsvp-logo">TSV</span><div><strong>Vereinsportal</strong><span>' . esc_html(get_bloginfo('name')) . '</span></div></div>';
+    echo '<div class="tsvp-auth__brand"><img class="tsvp-logo" src="' . esc_url(TSVP_URL . 'assets/logo.png') . '" alt="TSV Much" width="47" height="64"><div><strong>Vereinsportal</strong><span>' . esc_html(get_bloginfo('name')) . '</span></div></div>';
     tsvp_notice();
 
     if ($ansicht === 'passwort') {
@@ -186,7 +186,7 @@ function tsvp_view_app($u)
     ?>
     <header class="tsvp-header">
         <a class="tsvp-brand" href="<?php echo tsvp_link(); ?>">
-            <span class="tsvp-logo">TSV</span>
+            <img class="tsvp-logo" src="<?php echo esc_url(TSVP_URL . 'assets/logo.png'); ?>" alt="TSV Much" width="34" height="46">
             <span><strong>Vereinsportal</strong><span><?php echo esc_html(get_bloginfo('name')); ?></span></span>
         </a>
         <div class="tsvp-user">
