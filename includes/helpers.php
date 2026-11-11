@@ -50,10 +50,8 @@ function tsvp_status_antrag()
 function tsvp_kategorien()
 {
     return [
-        'protokoll' => 'Protokolle',
-        'formular'  => 'Formulare',
-        'info'      => 'Informationen',
-        'sonstiges' => 'Sonstiges',
+        'jahreshauptversammlung' => 'Jahreshauptversammlung',
+        'vereinsratssitzung'     => 'Vereinsratssitzung',
     ];
 }
 
@@ -79,6 +77,12 @@ function tsvp_is_al($u)
 function tsvp_darf_verwalten($u)
 {
     return tsvp_is_vorstand($u) || tsvp_is_al($u);
+}
+
+/** Dokumente (Protokolle) sehen und hochladen: nur Vorstand und Abteilungsleitungen. */
+function tsvp_darf_dokumente($u)
+{
+    return tsvp_darf_verwalten($u);
 }
 
 /* ------------------------------------------------------------------ */
@@ -256,15 +260,7 @@ function tsvp_scope_sql($u)
 
 function tsvp_dokument_scope_sql($u)
 {
-    global $wpdb;
-    if (tsvp_is_vorstand($u)) {
-        return '1=1';
-    }
-    return $wpdb->prepare(
-        "(x.sichtbarkeit = 'alle' OR (x.sichtbarkeit = 'abteilung' AND x.abteilung_id = %d AND x.abteilung_id > 0) OR x.benutzer_id = %d)",
-        (int) $u->abteilung_id,
-        $u->id
-    );
+    return tsvp_darf_dokumente($u) ? '1=1' : '1=0';
 }
 
 /* ------------------------------------------------------------------ */
@@ -287,10 +283,7 @@ function tsvp_kann_dokument_sehen($u, $row)
     if (!$u || !$row) {
         return false;
     }
-    if (tsvp_is_vorstand($u) || (int) $row->benutzer_id === (int) $u->id || $row->sichtbarkeit === 'alle') {
-        return true;
-    }
-    return $row->sichtbarkeit === 'abteilung' && $row->abteilung_id && (int) $row->abteilung_id === (int) $u->abteilung_id;
+    return tsvp_darf_dokumente($u);
 }
 
 /** Abrechnung: Freigabe durch Vorstand oder Abteilungsleitung (nie die eigene). */

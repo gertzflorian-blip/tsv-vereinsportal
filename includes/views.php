@@ -162,7 +162,9 @@ function tsvp_menu($u)
     if (tsvp_darf_verwalten($u)) {
         $m['auszahlungen'] = 'Auszahlungen';
     }
-    $m['dokumente'] = 'Dokumente';
+    if (tsvp_darf_dokumente($u)) {
+        $m['dokumente'] = 'Dokumente';
+    }
     if (tsvp_darf_verwalten($u)) {
         $m['verwaltung'] = 'Verwaltung';
     }
@@ -299,9 +301,9 @@ function tsvp_view_start($u)
         $auszahlen_summe = (float) $a->s + (float) $b->s;
     }
 
-    $doks = $wpdb->get_results(
+    $doks = tsvp_darf_dokumente($u) ? $wpdb->get_results(
         'SELECT x.* FROM ' . tsvp_t('dokumente') . ' x WHERE ' . tsvp_dokument_scope_sql($u) . ' ORDER BY x.created_at DESC LIMIT 5'
-    );
+    ) : [];
     ?>
     <div class="tsvp-pagehead">
         <div>
@@ -363,16 +365,18 @@ function tsvp_view_start($u)
         </section>
     <?php endif; ?>
 
+    <?php if (tsvp_darf_dokumente($u)) : ?>
     <section class="tsvp-section">
-        <div class="tsvp-section__head"><h3>Neue Dokumente</h3><a href="<?php echo tsvp_link(['bereich' => 'dokumente']); ?>">Alle anzeigen</a></div>
+        <div class="tsvp-section__head"><h3>Neue Protokolle</h3><a href="<?php echo tsvp_link(['bereich' => 'dokumente']); ?>">Alle anzeigen</a></div>
         <?php if (!$doks) : ?>
-            <?php tsvp_empty('Noch keine Dokumente', 'Protokolle, Formulare und Infos erscheinen hier, sobald sie hochgeladen sind.'); ?>
+            <?php tsvp_empty('Noch keine Protokolle', 'Protokolle der Jahreshauptversammlung und der Vereinsratssitzungen erscheinen hier, sobald sie hochgeladen sind.'); ?>
         <?php else : ?>
             <ul class="tsvp-list"><?php foreach ($doks as $d) {
                 tsvp_dokument_item($u, $d, false);
             } ?></ul>
         <?php endif; ?>
     </section>
+    <?php endif; ?>
     <?php
 }
 
@@ -738,11 +742,6 @@ function tsvp_dokument_item($u, $d, $mit_loeschen = true)
     $url  = esc_url(add_query_arg(['tsvp_datei' => 'dok', 'id' => $d->id], tsvp_page_url()));
     $kat  = tsvp_kategorien()[$d->kategorie] ?? '';
     $meta = [$kat, tsvp_datum_utc($d->created_at), size_format((int) $d->groesse)];
-    if ($d->sichtbarkeit === 'abteilung') {
-        $meta[] = 'nur ' . tsvp_abteilung_name($d->abteilung_id);
-    } elseif ($d->sichtbarkeit === 'vorstand') {
-        $meta[] = 'nur Vorstand';
-    }
     ?>
     <li class="tsvp-doc">
         <a href="<?php echo $url; ?>" target="_blank" rel="noopener">
@@ -779,37 +778,22 @@ function tsvp_view_dokumente($u)
     $docs = $wpdb->get_results('SELECT x.* FROM ' . tsvp_t('dokumente') . " x WHERE $where ORDER BY x.created_at DESC LIMIT 500");
     ?>
     <div class="tsvp-pagehead">
-        <div><h2>Dokumente</h2><p class="tsvp-muted">Protokolle, Formulare und Infos für den Verein.</p></div>
+        <div><h2>Dokumente</h2><p class="tsvp-muted">Protokolle der Jahreshauptversammlung und der Vereinsratssitzungen – nur für Vorstand und Abteilungsleitungen.</p></div>
     </div>
 
-    <?php if (tsvp_darf_verwalten($u)) : ?>
+    <?php if (tsvp_darf_dokumente($u)) : ?>
         <details class="tsvp-card tsvp-upload"<?php echo !$docs && !$kat && $suche === '' ? ' open' : ''; ?>>
-            <summary>+ Dokument hochladen</summary>
+            <summary>+ Protokoll hochladen</summary>
             <form method="post" enctype="multipart/form-data" class="tsvp-form">
                 <?php tsvp_form_fields('dokument_hochladen'); ?>
                 <div class="tsvp-grid">
-                    <label>Titel<input type="text" name="titel" maxlength="190" required placeholder="z. B. Protokoll Vorstandssitzung März"></label>
+                    <label>Titel<input type="text" name="titel" maxlength="190" required placeholder="z. B. Protokoll Jahreshauptversammlung 2026"></label>
                     <label>Kategorie<select name="kategorie">
-                        <?php foreach ($kats as $k => $l) : ?><option value="<?php echo esc_attr($k); ?>"<?php selected($k, $kat ?: 'protokoll'); ?>><?php echo esc_html($l); ?></option><?php endforeach; ?>
+                        <?php foreach ($kats as $k => $l) : ?><option value="<?php echo esc_attr($k); ?>"<?php selected($k, $kat ?: 'jahreshauptversammlung'); ?>><?php echo esc_html($l); ?></option><?php endforeach; ?>
                     </select></label>
                 </div>
                 <label>Kurzbeschreibung <small>optional</small><input type="text" name="beschreibung" maxlength="300"></label>
-                <div class="tsvp-grid">
-                    <label>Wer darf es sehen?<select name="sichtbarkeit" data-sichtbarkeit>
-                        <?php foreach (tsvp_sichtbarkeiten() as $k => $l) :
-                            if ($k === 'vorstand' && !tsvp_is_vorstand($u)) {
-                                continue;
-                            }
-                            if ($k === 'abteilung' && tsvp_is_al($u)) {
-                                $l = 'Nur ' . tsvp_abteilung_name($u->abteilung_id);
-                            } ?>
-                            <option value="<?php echo esc_attr($k); ?>"><?php echo esc_html($l); ?></option>
-                        <?php endforeach; ?>
-                    </select></label>
-                    <?php if (tsvp_is_vorstand($u)) : ?>
-                        <label data-abteilung-wahl hidden>Abteilung<select name="abteilung_id"><?php echo tsvp_abteilung_options(0, '– bitte wählen –'); ?></select></label>
-                    <?php endif; ?>
-                </div>
+                <p class="tsvp-small tsvp-muted">Sichtbar für Vorstand und Abteilungsleitungen.</p>
                 <label>Datei <small>PDF, Bilder, Office – max. 20 MB</small><input type="file" name="datei" required accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.odt,.ods,.txt"></label>
                 <div class="tsvp-actions"><button class="tsvp-btn tsvp-btn--primary">Hochladen</button></div>
             </form>
@@ -833,7 +817,7 @@ function tsvp_view_dokumente($u)
 
     <?php
     if (!$docs) {
-        tsvp_empty($suche !== '' ? 'Nichts gefunden' : 'Noch keine Dokumente', $suche !== '' ? 'Versuch es mit einem anderen Suchbegriff.' : '');
+        tsvp_empty($suche !== '' ? 'Nichts gefunden' : 'Noch keine Protokolle', $suche !== '' ? 'Versuch es mit einem anderen Suchbegriff.' : '');
         return;
     }
     echo '<ul class="tsvp-list">';

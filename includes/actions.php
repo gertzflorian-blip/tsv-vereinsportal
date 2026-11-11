@@ -421,31 +421,18 @@ function tsvp_action_dokument_hochladen($u)
 {
     global $wpdb;
     $zurueck = ['bereich' => 'dokumente'];
-    if (!tsvp_darf_verwalten($u)) {
+    if (!tsvp_darf_dokumente($u)) {
         tsvp_redirect($zurueck + ['tsvp_msg' => 'keine_rechte']);
     }
 
     $titel     = sanitize_text_field(tsvp_post('titel'));
     $kategorie = sanitize_key(tsvp_post('kategorie'));
-    $sicht     = sanitize_key(tsvp_post('sichtbarkeit'));
-    if ($titel === '' || !isset(tsvp_kategorien()[$kategorie]) || !isset(tsvp_sichtbarkeiten()[$sicht])) {
+    if ($titel === '' || !isset(tsvp_kategorien()[$kategorie])) {
         tsvp_redirect($zurueck + ['tsvp_msg' => 'pflicht']);
     }
-
-    if (tsvp_is_al($u)) {
-        if ($sicht === 'vorstand') {
-            $sicht = 'abteilung';
-        }
-        $abteilung = (int) $u->abteilung_id;
-    } else {
-        $abteilung = absint(tsvp_post('abteilung_id', 0));
-    }
-    if ($sicht === 'abteilung' && (!$abteilung || !isset(tsvp_abteilungen()[$abteilung]))) {
-        tsvp_redirect($zurueck + ['tsvp_msg' => 'abteilung_waehlen']);
-    }
-    if ($sicht !== 'abteilung' && tsvp_is_vorstand($u)) {
-        $abteilung = 0;
-    }
+    // Protokolle sehen immer Vorstand und Abteilungsleitungen.
+    $sicht     = 'leitung';
+    $abteilung = 0;
 
     $datei = tsvp_store_upload($_FILES['datei'] ?? null);
     if (!$datei) {
@@ -472,7 +459,7 @@ function tsvp_action_dokument_loeschen($u)
 {
     global $wpdb;
     $row = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . tsvp_t('dokumente') . ' WHERE id = %d', absint(tsvp_post('id'))));
-    if (!$row || !(tsvp_is_vorstand($u) || (int) $row->benutzer_id === (int) $u->id)) {
+    if (!$row || !tsvp_darf_dokumente($u) || !(tsvp_is_vorstand($u) || (int) $row->benutzer_id === (int) $u->id)) {
         tsvp_redirect(['bereich' => 'dokumente', 'tsvp_msg' => 'keine_rechte']);
     }
     tsvp_delete_file($row->datei);

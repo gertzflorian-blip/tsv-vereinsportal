@@ -28,8 +28,11 @@ Auf dem Handy lässt sie sich auf den Startbildschirm legen:
 | Als ausgezahlt markieren | – | – | ✓ |
 | Auszahlungsanträge stellen | – | ✓ | ✓ |
 | Auszahlungsanträge genehmigen | – | – | ✓ |
-| Dokumente hochladen | – | für alle / eigene Abteilung | für alle / Abteilung / nur Vorstand |
+| Protokolle sehen & hochladen | – | ✓ | ✓ |
 | Personen verwalten | – | Übungsleiter der Abteilung | alle |
+
+## Dokumente
+Nur Protokolle der **Jahreshauptversammlung** und der **Vereinsratssitzungen** (das sind die beiden Kategorien). Sichtbar ausschließlich für Vorstand und Abteilungsleitungen – Übungsleiter sehen den Bereich nicht.
 
 ## Ablauf
 - **Abrechnung**: Eingereicht → Freigegeben (Abteilungsleitung/Vorstand) → Ausgezahlt (Vorstand). Ablehnung nur mit Begründung.
