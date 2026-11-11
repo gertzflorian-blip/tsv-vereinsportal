@@ -496,7 +496,11 @@ function tsvp_action_benutzer_speichern($u)
     $tab = tsvp_t('benutzer');
     $id  = absint(tsvp_post('id'));
     $alt = $id ? tsvp_get_benutzer($id) : null;
-    $zurueck = ['bereich' => 'verwaltung', 'person' => $id ?: 'neu'];
+    $von     = tsvp_post('von') === 'abteilungen' && tsvp_is_vorstand($u) ? 'abteilungen' : '';
+    $zurueck = array_filter(['bereich' => 'verwaltung', 'person' => $id ?: 'neu', 'von' => $von]);
+    if (!$id) {
+        $zurueck += array_filter(['abteilung' => absint(tsvp_post('abteilung_id', 0)), 'rolle' => sanitize_key(tsvp_post('rolle'))]);
+    }
 
     if ($id && (!$alt || !tsvp_kann_person_bearbeiten($u, $alt))) {
         tsvp_redirect(['bereich' => 'verwaltung', 'tsvp_msg' => 'keine_rechte']);
@@ -564,7 +568,7 @@ function tsvp_action_benutzer_speichern($u)
     if (tsvp_post('einladen') && $aktiv) {
         $msg = tsvp_send_link(tsvp_get_benutzer($id), 'einladung') ? 'eingeladen' : 'mail_fehler';
     }
-    tsvp_redirect(['bereich' => 'verwaltung', 'tsvp_msg' => $msg]);
+    tsvp_redirect(['bereich' => $von ?: 'verwaltung', 'tsvp_msg' => $msg]);
 }
 
 function tsvp_action_benutzer_einladen($u)

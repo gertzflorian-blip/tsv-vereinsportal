@@ -159,7 +159,11 @@ function tsvp_view_login()
 
 function tsvp_menu($u)
 {
-    $m = ['start' => 'Start', 'abrechnungen' => 'Abrechnungen'];
+    $m = ['start' => 'Start'];
+    if (tsvp_is_vorstand($u)) {
+        $m['abteilungen'] = 'Abteilungen';
+    }
+    $m['abrechnungen'] = 'Abrechnungen';
     if (tsvp_darf_verwalten($u)) {
         $m['auszahlungen'] = 'Auszahlungen';
     }
@@ -203,7 +207,7 @@ function tsvp_view_app($u)
     </header>
     <nav class="tsvp-nav" aria-label="Bereiche">
         <?php foreach ($menu as $key => $label) : ?>
-            <a href="<?php echo tsvp_link(['bereich' => $key]); ?>" class="<?php echo $key === $bereich ? 'is-active' : ''; ?>"<?php echo $key === $bereich ? ' aria-current="page"' : ''; ?>><?php echo tsvp_nav_icon($key); ?><span><?php echo esc_html($label); ?></span></a>
+            <a href="<?php echo tsvp_link(['bereich' => $key]); ?>" class="<?php echo $key === $bereich ? 'is-active' : ''; ?>"<?php echo $key === $bereich ? ' aria-current="page"' : ''; ?>><?php echo tsvp_nav_icon($key); ?><span class="tsvp-nav__lang"><?php echo esc_html($label); ?></span><span class="tsvp-nav__kurz"><?php echo esc_html(['abrechnungen' => 'Abrechnung', 'auszahlungen' => 'Auszahlung', 'abteilungen' => 'Abteilung'][$key] ?? $label); ?></span></a>
         <?php endforeach; ?>
     </nav>
     <main class="tsvp-main">
@@ -218,6 +222,9 @@ function tsvp_view_app($u)
                 break;
             case 'dokumente':
                 tsvp_view_dokumente($u);
+                break;
+            case 'abteilungen':
+                tsvp_view_abteilungen_uebersicht($u);
                 break;
             case 'verwaltung':
                 tsvp_view_verwaltung($u);
@@ -241,6 +248,7 @@ function tsvp_nav_icon($key)
         'start'        => '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
         'abrechnungen' => '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/>',
         'auszahlungen' => '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/>',
+        'abteilungen'  => '<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
         'dokumente'    => '<path d="M4 6a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>',
         'verwaltung'   => '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.3-5.5 6.5-5.5s5.9 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.6 3.5 5.2"/>',
     ];
@@ -936,8 +944,16 @@ function tsvp_view_personen($u)
 
 function tsvp_view_person_form($u, $id)
 {
-    $p = $id ? tsvp_get_benutzer($id) : null;
-    tsvp_back('Verwaltung', ['bereich' => 'verwaltung']);
+    $p   = $id ? tsvp_get_benutzer($id) : null;
+    $von = (isset($_GET['von']) && $_GET['von'] === 'abteilungen' && tsvp_is_vorstand($u)) ? 'abteilungen' : '';
+    if ($von) {
+        tsvp_back('Abteilungen', ['bereich' => 'abteilungen']);
+    } else {
+        tsvp_back('Verwaltung', ['bereich' => 'verwaltung']);
+    }
+    // Vorbelegung, z. B. „+ Übungsleiter“ aus einer Abteilung heraus
+    $vor_abteilung = isset($_GET['abteilung']) ? absint($_GET['abteilung']) : 0;
+    $vor_rolle     = isset($_GET['rolle']) && isset(tsvp_rollen()[sanitize_key($_GET['rolle'])]) ? sanitize_key($_GET['rolle']) : 'uebungsleiter';
     if ($id && (!$p || !tsvp_kann_person_bearbeiten($u, $p))) {
         tsvp_empty('Nicht gefunden', 'Diese Person gibt es nicht oder du darfst sie nicht bearbeiten.');
         return;
@@ -949,6 +965,7 @@ function tsvp_view_person_form($u, $id)
     <form method="post" class="tsvp-card tsvp-form">
         <?php tsvp_form_fields('benutzer_speichern'); ?>
         <input type="hidden" name="id" value="<?php echo (int) $id; ?>">
+        <?php if ($von) : ?><input type="hidden" name="von" value="abteilungen"><?php endif; ?>
         <div class="tsvp-grid">
             <label>Name<input type="text" name="name" maxlength="120" required value="<?php echo esc_attr($p->name ?? ''); ?>"></label>
             <label>E-Mail <small>= Anmeldename</small><input type="email" name="email" required value="<?php echo esc_attr($p->email ?? ''); ?>"></label>
@@ -956,10 +973,10 @@ function tsvp_view_person_form($u, $id)
         <div class="tsvp-grid">
             <?php if (tsvp_is_vorstand($u)) : ?>
                 <label>Rolle<select name="rolle"<?php disabled($selbst); ?>>
-                    <?php foreach (tsvp_rollen() as $k => $l) : ?><option value="<?php echo esc_attr($k); ?>"<?php selected($p->rolle ?? 'uebungsleiter', $k); ?>><?php echo esc_html($l); ?></option><?php endforeach; ?>
+                    <?php foreach (tsvp_rollen() as $k => $l) : ?><option value="<?php echo esc_attr($k); ?>"<?php selected($p->rolle ?? $vor_rolle, $k); ?>><?php echo esc_html($l); ?></option><?php endforeach; ?>
                 </select></label>
                 <?php if ($selbst) : ?><input type="hidden" name="rolle" value="<?php echo esc_attr($p->rolle); ?>"><?php endif; ?>
-                <label>Abteilung<select name="abteilung_id"><?php echo tsvp_abteilung_options($p->abteilung_id ?? 0, '– keine –'); ?></select></label>
+                <label>Abteilung<select name="abteilung_id"><?php echo tsvp_abteilung_options($p->abteilung_id ?? $vor_abteilung, '– keine –'); ?></select></label>
             <?php else : ?>
                 <div class="tsvp-field"><span>Rolle</span><strong>Übungsleitung</strong></div>
                 <div class="tsvp-field"><span>Abteilung</span><strong><?php echo esc_html(tsvp_abteilung_name($u->abteilung_id)); ?></strong></div>
@@ -1027,6 +1044,114 @@ function tsvp_view_abteilungen()
             </li>
         <?php endforeach; ?>
     </ul>
+    <?php
+}
+
+/* ------------------------------------------------------------------ */
+/* Abteilungen (Übersicht für den Vorstand)                            */
+/* ------------------------------------------------------------------ */
+
+function tsvp_view_abteilungen_uebersicht($u)
+{
+    global $wpdb;
+    if (!tsvp_is_vorstand($u)) {
+        tsvp_empty('Kein Zugriff');
+        return;
+    }
+    $abteilungen = tsvp_abteilungen();
+    $personen    = $wpdb->get_results(
+        'SELECT * FROM ' . tsvp_t('benutzer') . " WHERE rolle IN ('abteilungsleiter','uebungsleiter') ORDER BY aktiv DESC, name"
+    );
+    $nach = [];
+    foreach ($personen as $p) {
+        $a = isset($abteilungen[(int) $p->abteilung_id]) ? (int) $p->abteilung_id : 0;
+        $nach[$a][$p->rolle][] = $p;
+    }
+    $verwalten = tsvp_link(['bereich' => 'verwaltung', 'tab' => 'abteilungen']);
+    ?>
+    <div class="tsvp-pagehead">
+        <div><h2>Abteilungen</h2><p class="tsvp-muted">Alle Abteilungen mit ihrer Leitung und ihren Übungsleitern.</p></div>
+        <div class="tsvp-pagehead__actions"><a class="tsvp-btn" href="<?php echo $verwalten; ?>">Abteilungen verwalten</a></div>
+    </div>
+    <?php
+    if (!$abteilungen) {
+        tsvp_empty('Noch keine Abteilungen', 'Lege unter „Verwaltung → Abteilungen“ eure Abteilungen an.');
+        echo '<p class="tsvp-center"><a class="tsvp-btn tsvp-btn--primary" href="' . $verwalten . '">+ Abteilung anlegen</a></p>';
+        return;
+    }
+    echo '<div class="tsvp-abtgrid">';
+    foreach ($abteilungen as $id => $name) {
+        tsvp_abteilung_karte($id, $name, $nach[$id] ?? []);
+    }
+    if (!empty($nach[0])) {
+        tsvp_abteilung_karte(0, 'Ohne Abteilung', $nach[0]);
+    }
+    echo '</div>';
+}
+
+function tsvp_abteilung_karte($id, $name, $leute)
+{
+    $al  = $leute['abteilungsleiter'] ?? [];
+    $uel = $leute['uebungsleiter'] ?? [];
+    $neu = tsvp_link(['bereich' => 'verwaltung', 'person' => 'neu', 'abteilung' => $id, 'rolle' => 'uebungsleiter', 'von' => 'abteilungen']);
+    ?>
+    <section class="tsvp-card tsvp-abt<?php echo $id ? '' : ' tsvp-abt--ohne'; ?>">
+        <header class="tsvp-abt__head">
+            <h3><?php echo esc_html($name); ?></h3>
+            <span class="tsvp-muted"><?php echo count($uel) === 1 ? '1 Übungsleiter' : count($uel) . ' Übungsleiter'; ?></span>
+        </header>
+        <?php if ($id) : ?>
+            <div class="tsvp-abt__leitung">
+                <span>Abteilungsleitung</span>
+                <?php if ($al) :
+                    foreach ($al as $p) {
+                        tsvp_abteilung_person($p);
+                    }
+                else : ?>
+                    <a class="tsvp-abt__fehlt" href="<?php echo tsvp_link(['bereich' => 'verwaltung', 'person' => 'neu', 'abteilung' => $id, 'rolle' => 'abteilungsleiter', 'von' => 'abteilungen']); ?>">+ Abteilungsleitung festlegen</a>
+                <?php endif; ?>
+            </div>
+        <?php elseif ($al) : ?>
+            <div class="tsvp-abt__leitung"><span>Abteilungsleitung</span><?php foreach ($al as $p) {
+                tsvp_abteilung_person($p);
+            } ?></div>
+        <?php endif; ?>
+        <div class="tsvp-abt__uel">
+            <span>Übungsleiter</span>
+            <?php if ($uel) : ?>
+                <ul><?php foreach ($uel as $p) {
+                    echo '<li>';
+                    tsvp_abteilung_person($p, true);
+                    echo '</li>';
+                } ?></ul>
+            <?php else : ?>
+                <p class="tsvp-muted tsvp-abt__leer">Noch keine Übungsleiter.</p>
+            <?php endif; ?>
+        </div>
+        <?php if ($id) : ?>
+            <a class="tsvp-btn tsvp-btn--sm tsvp-abt__add" href="<?php echo $neu; ?>">+ Übungsleiter anlegen</a>
+        <?php endif; ?>
+    </section>
+    <?php
+}
+
+function tsvp_abteilung_person($p, $mit_satz = false)
+{
+    $url = tsvp_link(['bereich' => 'verwaltung', 'person' => $p->id, 'von' => 'abteilungen']);
+    $info = [];
+    if ($mit_satz && (float) $p->stundensatz > 0) {
+        $info[] = tsvp_money($p->stundensatz) . '/Std.';
+    }
+    ?>
+    <a class="tsvp-abt__person<?php echo (int) $p->aktiv ? '' : ' is-inaktiv'; ?>" href="<?php echo $url; ?>">
+        <span class="tsvp-avatar"><?php echo esc_html(mb_strtoupper(mb_substr($p->name, 0, 1))); ?></span>
+        <span class="tsvp-abt__name"><strong><?php echo esc_html($p->name); ?></strong><?php if ($info) : ?><small><?php echo esc_html(implode(' · ', $info)); ?></small><?php endif; ?></span>
+        <?php if (!(int) $p->aktiv) : ?>
+            <span class="tsvp-badge tsvp-badge--inaktiv">Deaktiviert</span>
+        <?php elseif ($p->pass_hash === '' && !$p->wp_user_id) : ?>
+            <span class="tsvp-badge tsvp-badge--eingereicht">Eingeladen</span>
+        <?php endif; ?>
+    </a>
     <?php
 }
 

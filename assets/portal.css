@@ -207,6 +207,30 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 .tsvp-wplogin a { color: var(--tsvp-muted) !important; }
 .tsvp-footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--tsvp-line); color: var(--tsvp-muted); font-size: .8rem; text-align: center; }
 
+/* Abteilungen-Übersicht ---------------------------------------------- */
+.tsvp-abtgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; align-items: start; }
+.tsvp-abt { display: flex; flex-direction: column; gap: .9rem; border-top: 4px solid var(--tsvp-accent-2); }
+.tsvp-abt--ohne { border-top-color: var(--tsvp-line); }
+.tsvp-abt__head { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+.tsvp-abt__head h3 { margin: 0; font-size: 1.15rem; }
+.tsvp-abt__head .tsvp-muted { font-size: .85rem; white-space: nowrap; }
+.tsvp-abt__leitung > span, .tsvp-abt__uel > span { display: block; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--tsvp-muted); margin-bottom: .3rem; }
+.tsvp-abt__leitung { padding: .6rem .7rem; border-radius: 10px; background: var(--tsvp-accent-soft); }
+.tsvp-abt__uel ul { list-style: none; margin: 0; padding: 0; }
+.tsvp-abt__uel li + li { border-top: 1px solid var(--tsvp-line); }
+.tsvp-abt__person { display: flex; align-items: center; gap: .6rem; padding: .4rem .2rem; color: var(--tsvp-ink) !important; text-decoration: none !important; border-radius: 8px; }
+.tsvp-abt__person:hover { background: var(--tsvp-bg); }
+.tsvp-abt__person.is-inaktiv { opacity: .6; }
+.tsvp-abt__person .tsvp-avatar { width: 30px; height: 30px; font-size: .85rem; flex: none; }
+.tsvp-abt__name { flex: 1; min-width: 0; }
+.tsvp-abt__name strong { display: block; font-weight: 600; }
+.tsvp-abt__name small { display: block; color: var(--tsvp-muted); }
+.tsvp-abt__fehlt { font-weight: 600; }
+.tsvp-abt__leer { margin: 0; font-size: .9rem; }
+.tsvp-abt__add { align-self: flex-start; }
+.tsvp-center { text-align: center; margin-top: 1rem; }
+.tsvp-abtgrid .tsvp-card { margin: 0; }
+
 /* Eigenständige App-Ansicht (ohne Homepage-Theme) -------------------- */
 html:has(.tsvp-body) { background: var(--tsvp-bg, #f3f7fb); }
 .tsvp-body { margin: 0; min-height: 100vh; min-height: 100dvh; background: #f3f7fb; -webkit-text-size-adjust: 100%; }
@@ -235,12 +259,19 @@ html:has(.tsvp-body) { background: var(--tsvp-bg, #f3f7fb); }
         padding: .55rem .1rem .5rem; margin: 0; border: 0; font-size: .68rem; font-weight: 600; letter-spacing: -.01em; }
     .tsvp-body .tsvp-nav a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
     .tsvp-body .tsvp-nav a.is-active { color: var(--tsvp-accent); }
+    .tsvp-body .tsvp-nav:has(a:nth-child(6)) .tsvp-nav__lang { display: none; }
+    .tsvp-body .tsvp-nav:has(a:nth-child(6)) .tsvp-nav__kurz { display: block; }
+    /* Bei sechs Reitern (Vorstand) etwas kleiner, damit alle Namen ganz passen */
+    .tsvp-body .tsvp-nav:has(a:nth-child(6)) a { font-size: .6rem; letter-spacing: -.02em; padding-left: 0; padding-right: 0; }
     .tsvp-body .tsvp-nav__icon { display: block; }
     .tsvp-body .tsvp-header { padding-bottom: calc(.6rem + 4px); }
     .tsvp-body .tsvp-brand span span { display: none; }
     .tsvp-body .tsvp-user__name > span:last-child { display: none; }
     .tsvp-body .tsvp-main { padding-top: .5rem; }
 }
+
+/* Kurze Menünamen nur in der Handy-Leiste */
+.tsvp-nav__kurz { display: none; }
 
 /* Mobil -------------------------------------------------------------- */
 @media (max-width: 640px) {
