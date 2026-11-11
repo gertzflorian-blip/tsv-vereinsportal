@@ -138,6 +138,28 @@ function tsvp_datum($ymd)
     return $ts ? date_i18n('d.m.Y', $ts) : '';
 }
 
+/** Datum auf Deutsch, unabhängig von der WordPress-Sprache. Formate: 'lang', 'tag', 'monat_kurz', 'jahr'. */
+function tsvp_datum_de($ymd, $format = 'lang')
+{
+    $ts = strtotime($ymd);
+    if (!$ts) {
+        return '';
+    }
+    $tage   = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+    $monate = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+    $m      = $monate[(int) date('n', $ts) - 1];
+    switch ($format) {
+        case 'tag':
+            return date('j', $ts);
+        case 'monat_kurz':
+            return mb_substr($m, 0, 3);
+        case 'jahr':
+            return date('Y', $ts);
+        default:
+            return $tage[(int) date('w', $ts)] . ', ' . date('j', $ts) . '. ' . $m . ' ' . date('Y', $ts);
+    }
+}
+
 function tsvp_datum_utc($mysql, $format = 'd.m.Y')
 {
     return $mysql ? get_date_from_gmt($mysql, $format) : '';

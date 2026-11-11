@@ -173,6 +173,11 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 .tsvp-doc .tsvp-badge { margin-bottom: .2rem; font-size: .75rem; padding: .15rem .55rem; }
 .tsvp-badge--jahreshauptversammlung, .tsvp-doc--jahreshauptversammlung .tsvp-filetype { background: var(--tsvp-accent-soft); color: var(--tsvp-accent); }
 .tsvp-badge--vereinsratssitzung, .tsvp-doc--vereinsratssitzung .tsvp-filetype { background: #e3eefc; color: #1d4f91; }
+.tsvp-cal { width: 56px !important; height: 60px !important; display: flex !important; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; letter-spacing: 0 !important; text-transform: uppercase; }
+.tsvp-cal b { font-size: 1.35rem; font-weight: 800; }
+.tsvp-cal span { font-size: .68rem; font-weight: 700; }
+.tsvp-doc__datum { display: block; font-weight: 700; color: var(--tsvp-ink); }
+.tsvp-doc__info { display: block; font-size: .8rem; }
 .tsvp-filetype { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 9px; background: var(--tsvp-accent-soft); color: var(--tsvp-accent); font-size: .68rem; font-weight: 800; letter-spacing: .03em; }
 
 /* Details ------------------------------------------------------------ */

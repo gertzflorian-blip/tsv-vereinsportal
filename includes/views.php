@@ -743,19 +743,26 @@ function tsvp_dokument_item($u, $d, $mit_loeschen = true)
     $url  = esc_url(add_query_arg(['tsvp_datei' => 'dok', 'id' => $d->id], tsvp_page_url()));
     $kat  = tsvp_kategorien()[$d->kategorie] ?? '';
     $wann = !empty($d->sitzung_datum)
-        ? 'Sitzung am ' . tsvp_datum($d->sitzung_datum)
-        : 'hochgeladen am ' . tsvp_datum_utc($d->created_at);
+        ? '<span class="tsvp-doc__datum">Sitzung am ' . esc_html(tsvp_datum_de($d->sitzung_datum)) . '</span>'
+        : 'hochgeladen am ' . esc_html(tsvp_datum_utc($d->created_at));
+    $ts      = !empty($d->sitzung_datum) ? strtotime($d->sitzung_datum) : 0;
     $kuerzel = ['jahreshauptversammlung' => 'JHV', 'vereinsratssitzung' => 'VR'][$d->kategorie] ?? tsvp_datei_typ($d->dateiname);
-    $meta    = [$wann, tsvp_datei_typ($d->dateiname) . ', ' . size_format((int) $d->groesse)];
+    $meta    = tsvp_datei_typ($d->dateiname) . ', ' . size_format((int) $d->groesse);
     ?>
     <li class="tsvp-doc tsvp-doc--<?php echo esc_attr($d->kategorie); ?>">
         <a href="<?php echo $url; ?>" target="_blank" rel="noopener">
-            <span class="tsvp-filetype" title="<?php echo esc_attr($kat); ?>"><?php echo esc_html($kuerzel); ?></span>
+            <?php if ($ts) : ?>
+                <span class="tsvp-filetype tsvp-cal" title="Sitzung am <?php echo esc_attr(tsvp_datum($d->sitzung_datum)); ?>">
+                    <b><?php echo esc_html(tsvp_datum_de($d->sitzung_datum, 'tag')); ?></b><span><?php echo esc_html(tsvp_datum_de($d->sitzung_datum, 'monat_kurz')); ?></span><span><?php echo esc_html(tsvp_datum_de($d->sitzung_datum, 'jahr')); ?></span>
+                </span>
+            <?php else : ?>
+                <span class="tsvp-filetype" title="<?php echo esc_attr($kat); ?>"><?php echo esc_html($kuerzel); ?></span>
+            <?php endif; ?>
             <span class="tsvp-list__main">
                 <?php if ($kat !== '') : ?><span class="tsvp-badge tsvp-badge--<?php echo esc_attr($d->kategorie); ?>"><?php echo esc_html($kat); ?></span><?php endif; ?>
                 <strong><?php echo esc_html($d->titel); ?></strong>
                 <?php if ($d->beschreibung !== '') : ?><span class="tsvp-doc__desc"><?php echo esc_html($d->beschreibung); ?></span><?php endif; ?>
-                <small><?php echo esc_html(implode(' · ', array_filter($meta))); ?></small></span>
+                <small><?php echo $wann; ?><span class="tsvp-doc__info"><?php echo esc_html($meta); ?></span></small></span>
         </a>
         <?php if ($mit_loeschen && (tsvp_is_vorstand($u) || (int) $d->benutzer_id === (int) $u->id)) : ?>
             <form method="post" class="tsvp-doc__del">
