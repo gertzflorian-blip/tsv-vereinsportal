@@ -170,6 +170,9 @@ a.tsvp-stat:hover { border-color: var(--tsvp-accent); }
 .tsvp-doc > a { flex: 1; min-width: 0; }
 .tsvp-doc__desc { display: block; font-size: .9rem; color: var(--tsvp-ink); opacity: .85; }
 .tsvp-doc__del { padding-right: .6rem; margin: 0; }
+.tsvp-doc .tsvp-badge { margin-bottom: .2rem; font-size: .75rem; padding: .15rem .55rem; }
+.tsvp-badge--jahreshauptversammlung, .tsvp-doc--jahreshauptversammlung .tsvp-filetype { background: var(--tsvp-accent-soft); color: var(--tsvp-accent); }
+.tsvp-badge--vereinsratssitzung, .tsvp-doc--vereinsratssitzung .tsvp-filetype { background: #e3eefc; color: #1d4f91; }
 .tsvp-filetype { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 9px; background: var(--tsvp-accent-soft); color: var(--tsvp-accent); font-size: .68rem; font-weight: 800; letter-spacing: .03em; }
 
 /* Details ------------------------------------------------------------ */

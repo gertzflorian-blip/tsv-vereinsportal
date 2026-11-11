@@ -745,12 +745,15 @@ function tsvp_dokument_item($u, $d, $mit_loeschen = true)
     $wann = !empty($d->sitzung_datum)
         ? 'Sitzung am ' . tsvp_datum($d->sitzung_datum)
         : 'hochgeladen am ' . tsvp_datum_utc($d->created_at);
-    $meta = [$kat, $wann, size_format((int) $d->groesse)];
+    $kuerzel = ['jahreshauptversammlung' => 'JHV', 'vereinsratssitzung' => 'VR'][$d->kategorie] ?? tsvp_datei_typ($d->dateiname);
+    $meta    = [$wann, tsvp_datei_typ($d->dateiname) . ', ' . size_format((int) $d->groesse)];
     ?>
-    <li class="tsvp-doc">
+    <li class="tsvp-doc tsvp-doc--<?php echo esc_attr($d->kategorie); ?>">
         <a href="<?php echo $url; ?>" target="_blank" rel="noopener">
-            <span class="tsvp-filetype"><?php echo esc_html(tsvp_datei_typ($d->dateiname)); ?></span>
-            <span class="tsvp-list__main"><strong><?php echo esc_html($d->titel); ?></strong>
+            <span class="tsvp-filetype" title="<?php echo esc_attr($kat); ?>"><?php echo esc_html($kuerzel); ?></span>
+            <span class="tsvp-list__main">
+                <?php if ($kat !== '') : ?><span class="tsvp-badge tsvp-badge--<?php echo esc_attr($d->kategorie); ?>"><?php echo esc_html($kat); ?></span><?php endif; ?>
+                <strong><?php echo esc_html($d->titel); ?></strong>
                 <?php if ($d->beschreibung !== '') : ?><span class="tsvp-doc__desc"><?php echo esc_html($d->beschreibung); ?></span><?php endif; ?>
                 <small><?php echo esc_html(implode(' · ', array_filter($meta))); ?></small></span>
         </a>
