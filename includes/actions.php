@@ -430,6 +430,11 @@ function tsvp_action_dokument_hochladen($u)
     if ($titel === '' || !isset(tsvp_kategorien()[$kategorie])) {
         tsvp_redirect($zurueck + ['tsvp_msg' => 'pflicht']);
     }
+    $sitzung = sanitize_text_field(tsvp_post('sitzung_datum'));
+    $d       = DateTime::createFromFormat('!Y-m-d', $sitzung);
+    if (!$d || $d->format('Y-m-d') !== $sitzung) {
+        tsvp_redirect($zurueck + ['tsvp_msg' => 'sitzung_datum']);
+    }
     // Protokolle sehen immer Vorstand und Abteilungsleitungen.
     $sicht     = 'leitung';
     $abteilung = 0;
@@ -445,6 +450,7 @@ function tsvp_action_dokument_hochladen($u)
         'kategorie'    => $kategorie,
         'sichtbarkeit' => $sicht,
         'abteilung_id' => $abteilung,
+        'sitzung_datum' => $sitzung,
         'datei'        => $datei['datei'],
         'dateiname'    => $datei['name'],
         'mime'         => $datei['mime'],

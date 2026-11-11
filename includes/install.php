@@ -97,6 +97,7 @@ function tsvp_install()
         kategorie varchar(30) NOT NULL DEFAULT 'sonstiges',
         sichtbarkeit varchar(20) NOT NULL DEFAULT 'alle',
         abteilung_id bigint(20) unsigned NOT NULL DEFAULT 0,
+        sitzung_datum date DEFAULT NULL,
         datei varchar(255) NOT NULL,
         dateiname varchar(255) NOT NULL,
         mime varchar(100) NOT NULL DEFAULT '',

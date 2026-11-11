@@ -69,6 +69,7 @@ function tsvp_notice()
         'mail_fehler'       => ['err', 'Gespeichert, aber die E-Mail konnte nicht verschickt werden. Prüfe den Mailversand von WordPress (z. B. mit einem SMTP-Plugin).'],
         'abteilung_belegt'  => ['err', 'Der Abteilung sind noch Personen zugeordnet – sie kann nicht gelöscht werden.'],
         'abteilung_fehlt'   => ['err', 'Eine Abteilungsleitung braucht eine Abteilung.'],
+        'sitzung_datum'     => ['err', 'Bitte gib das Datum der Sitzung an.'],
         'abteilung_waehlen' => ['err', 'Bitte wähle die Abteilung aus, die das Dokument sehen soll.'],
         'selbst'            => ['err', 'Du kannst dich nicht selbst deaktivieren oder deine eigene Rolle ändern.'],
     ];
@@ -741,7 +742,10 @@ function tsvp_dokument_item($u, $d, $mit_loeschen = true)
 {
     $url  = esc_url(add_query_arg(['tsvp_datei' => 'dok', 'id' => $d->id], tsvp_page_url()));
     $kat  = tsvp_kategorien()[$d->kategorie] ?? '';
-    $meta = [$kat, tsvp_datum_utc($d->created_at), size_format((int) $d->groesse)];
+    $wann = !empty($d->sitzung_datum)
+        ? 'Sitzung am ' . tsvp_datum($d->sitzung_datum)
+        : 'hochgeladen am ' . tsvp_datum_utc($d->created_at);
+    $meta = [$kat, $wann, size_format((int) $d->groesse)];
     ?>
     <li class="tsvp-doc">
         <a href="<?php echo $url; ?>" target="_blank" rel="noopener">
@@ -775,7 +779,7 @@ function tsvp_view_dokumente($u)
         $like   = '%' . $wpdb->esc_like($suche) . '%';
         $where .= $wpdb->prepare(' AND (x.titel LIKE %s OR x.beschreibung LIKE %s)', $like, $like);
     }
-    $docs = $wpdb->get_results('SELECT x.* FROM ' . tsvp_t('dokumente') . " x WHERE $where ORDER BY x.created_at DESC LIMIT 500");
+    $docs = $wpdb->get_results('SELECT x.* FROM ' . tsvp_t('dokumente') . " x WHERE $where ORDER BY x.sitzung_datum DESC, x.created_at DESC LIMIT 500");
     ?>
     <div class="tsvp-pagehead">
         <div><h2>Dokumente</h2><p class="tsvp-muted">Protokolle der Jahreshauptversammlung und der Vereinsratssitzungen – nur für Vorstand und Abteilungsleitungen.</p></div>
@@ -792,7 +796,10 @@ function tsvp_view_dokumente($u)
                         <?php foreach ($kats as $k => $l) : ?><option value="<?php echo esc_attr($k); ?>"<?php selected($k, $kat ?: 'jahreshauptversammlung'); ?>><?php echo esc_html($l); ?></option><?php endforeach; ?>
                     </select></label>
                 </div>
-                <label>Kurzbeschreibung <small>optional</small><input type="text" name="beschreibung" maxlength="300"></label>
+                <div class="tsvp-grid">
+                    <label>Datum der Sitzung<input type="date" name="sitzung_datum" required max="<?php echo esc_attr(current_time('Y-m-d')); ?>"></label>
+                    <label>Kurzbeschreibung <small>optional</small><input type="text" name="beschreibung" maxlength="300"></label>
+                </div>
                 <p class="tsvp-small tsvp-muted">Sichtbar für Vorstand und Abteilungsleitungen.</p>
                 <label>Datei <small>PDF, Bilder, Office – max. 20 MB</small><input type="file" name="datei" required accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.odt,.ods,.txt"></label>
                 <div class="tsvp-actions"><button class="tsvp-btn tsvp-btn--primary">Hochladen</button></div>
